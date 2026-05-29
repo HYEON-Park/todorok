@@ -110,4 +110,4 @@ npx cap open android  # Android Studio 열기
 
 ## License
 
-MIT
+GPL
