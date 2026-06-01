@@ -17,6 +17,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('calendar');
   const [formMode, setFormMode] = useState(null);
   const [formDate, setFormDate] = useState(null);
+  const [calInitialDate, setCalInitialDate] = useState(null);
   const [darkMode, setDarkMode] = useState(() => localStorage.getItem(DARK_MODE_KEY) === 'true');
 
   const { diaries, create, update, remove } = useDiaries();
@@ -80,11 +81,13 @@ export default function App() {
   function handleSave(title, content, emoji) {
     if (formMode === 'create') create(formDate, title, content, emoji);
     else update(formDate, title, content, emoji);
+    setCalInitialDate(formDate);
     setFormMode(null);
     setFormDate(null);
   }
 
   function handleCancel() {
+    setCalInitialDate(formDate);
     setFormMode(null);
     setFormDate(null);
   }
@@ -118,6 +121,7 @@ export default function App() {
           onCreateDiary={openCreate}
           onEditDiary={openEdit}
           onDeleteDiary={remove}
+          initialDate={calInitialDate}
         />
       )}
       {activeTab === 'diary' && (

@@ -15,10 +15,17 @@ function todayStr() {
 
 function pad(n) { return String(n).padStart(2, '0'); }
 
-export default function CalendarPage({ diaries, todos, addTodo, toggleTodo, removeTodo, onCreateDiary, onEditDiary, onDeleteDiary }) {
-  const [year, setYear] = useState(_today.getFullYear());
-  const [month, setMonth] = useState(_today.getMonth() + 1);
-  const [selectedDate, setSelectedDate] = useState(todayStr());
+function parseDateStr(dateStr) {
+  if (!dateStr) return null;
+  const d = new Date(dateStr + 'T00:00:00');
+  return { year: d.getFullYear(), month: d.getMonth() + 1, dateStr };
+}
+
+export default function CalendarPage({ diaries, todos, addTodo, toggleTodo, removeTodo, onCreateDiary, onEditDiary, onDeleteDiary, initialDate }) {
+  const init = parseDateStr(initialDate);
+  const [year, setYear] = useState(init ? init.year : _today.getFullYear());
+  const [month, setMonth] = useState(init ? init.month : _today.getMonth() + 1);
+  const [selectedDate, setSelectedDate] = useState(init ? init.dateStr : todayStr());
   const [yearPickerOpen, setYearPickerOpen] = useState(false);
   const [monthPickerOpen, setMonthPickerOpen] = useState(false);
   const [modalDiaryDate, setModalDiaryDate] = useState(null);
