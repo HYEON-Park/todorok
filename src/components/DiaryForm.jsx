@@ -5,11 +5,15 @@ export default function DiaryForm({ date, initial, onSave, onCancel }) {
   const [content, setContent] = useState(initial?.content || '');
   const [emoji, setEmoji] = useState(initial?.emoji || '');
   const emojiInputRef = useRef(null);
+  const emojiValueRef = useRef(initial?.emoji || '');
 
   useEffect(() => {
+    const e = initial?.emoji || '';
     setTitle(initial?.title || '');
     setContent(initial?.content || '');
-    setEmoji(initial?.emoji || '');
+    setEmoji(e);
+    emojiValueRef.current = e;
+    if (emojiInputRef.current) emojiInputRef.current.value = e || '🍀';
   }, [initial]);
 
   const isDirty =
@@ -29,15 +33,35 @@ export default function DiaryForm({ date, initial, onSave, onCancel }) {
     onSave(title.trim(), content.trim(), emoji || '🍀');
   }
 
+  function handleEmojiClick() {
+    setEmoji('');
+    emojiValueRef.current = '';
+    if (emojiInputRef.current) {
+      emojiInputRef.current.value = '';
+      emojiInputRef.current.focus();
+    }
+  }
+
+  function handleEmojiBlur() {
+    if (!emojiValueRef.current && emojiInputRef.current) {
+      emojiInputRef.current.value = '🍀';
+    }
+  }
+
   function handleEmojiChange(e) {
     const val = e.target.value;
-    if (!val) { setEmoji(''); return; }
+    if (!val) { setEmoji(''); emojiValueRef.current = ''; return; }
+    let last;
     try {
       const segments = [...new Intl.Segmenter().segment(val)];
-      const last = segments.at(-1)?.segment;
-      if (last) setEmoji(last);
+      last = segments.at(-1)?.segment;
     } catch {
-      setEmoji([...val].at(-1) || val[0]);
+      last = [...val].at(-1) || val[0];
+    }
+    if (last) {
+      setEmoji(last);
+      emojiValueRef.current = last;
+      e.target.value = last;
     }
   }
 
@@ -51,10 +75,10 @@ export default function DiaryForm({ date, initial, onSave, onCancel }) {
           <input
             ref={emojiInputRef}
             className="form-emoji-btn"
-            value={emoji}
-            placeholder="🍀"
-            onClick={() => setEmoji('')}
+            defaultValue={emoji || '🍀'}
+            onClick={handleEmojiClick}
             onChange={handleEmojiChange}
+            onBlur={handleEmojiBlur}
           />
           {!emoji && <span className="form-emoji-hint">Win+;</span>}
         </div>
