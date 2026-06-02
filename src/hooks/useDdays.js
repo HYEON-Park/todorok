@@ -1,23 +1,23 @@
-import { useState, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { storageGet, storageSet } from '../utils/storage';
 
 const STORAGE_KEY = 'todorok-ddays';
 
-function load() {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
-  catch { return []; }
-}
-
-function save(data) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-}
-
 export function useDdays() {
-  const [ddays, setDdays] = useState(load);
+  const [ddays, setDdays] = useState([]);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    storageGet(STORAGE_KEY).then(raw => {
+      try { setDdays(raw ? JSON.parse(raw) : []); } catch { setDdays([]); }
+      setLoaded(true);
+    });
+  }, []);
 
   const addDday = useCallback((title, date) => {
     setDdays(prev => {
       const next = [...prev, { id: Date.now().toString(), title, date }];
-      save(next);
+      storageSet(STORAGE_KEY, JSON.stringify(next));
       return next;
     });
   }, []);
@@ -25,7 +25,7 @@ export function useDdays() {
   const removeDday = useCallback((id) => {
     setDdays(prev => {
       const next = prev.filter(d => d.id !== id);
-      save(next);
+      storageSet(STORAGE_KEY, JSON.stringify(next));
       return next;
     });
   }, []);
@@ -33,10 +33,10 @@ export function useDdays() {
   const updateDday = useCallback((id, title, date) => {
     setDdays(prev => {
       const next = prev.map(d => d.id === id ? { ...d, title, date } : d);
-      save(next);
+      storageSet(STORAGE_KEY, JSON.stringify(next));
       return next;
     });
   }, []);
 
-  return { ddays, addDday, removeDday, updateDday };
+  return { ddays, loaded, addDday, removeDday, updateDday };
 }

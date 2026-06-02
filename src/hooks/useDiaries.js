@@ -1,26 +1,23 @@
-import { useState, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { storageGet, storageSet } from '../utils/storage';
 
 const STORAGE_KEY = 'todorok-entries';
 
-function load() {
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-  } catch {
-    return {};
-  }
-}
-
-function save(data) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-}
-
 export function useDiaries() {
-  const [diaries, setDiaries] = useState(load);
+  const [diaries, setDiaries] = useState({});
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    storageGet(STORAGE_KEY).then(raw => {
+      try { setDiaries(raw ? JSON.parse(raw) : {}); } catch { setDiaries({}); }
+      setLoaded(true);
+    });
+  }, []);
 
   const create = useCallback((date, title, content, emoji) => {
     setDiaries(prev => {
       const next = { ...prev, [date]: { date, title, content, emoji: emoji || '' } };
-      save(next);
+      storageSet(STORAGE_KEY, JSON.stringify(next));
       return next;
     });
   }, []);
@@ -28,7 +25,7 @@ export function useDiaries() {
   const update = useCallback((date, title, content, emoji) => {
     setDiaries(prev => {
       const next = { ...prev, [date]: { ...prev[date], title, content, emoji: emoji || '' } };
-      save(next);
+      storageSet(STORAGE_KEY, JSON.stringify(next));
       return next;
     });
   }, []);
@@ -37,10 +34,10 @@ export function useDiaries() {
     setDiaries(prev => {
       const next = { ...prev };
       delete next[date];
-      save(next);
+      storageSet(STORAGE_KEY, JSON.stringify(next));
       return next;
     });
   }, []);
 
-  return { diaries, create, update, remove };
+  return { diaries, loaded, create, update, remove };
 }

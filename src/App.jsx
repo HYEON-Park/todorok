@@ -20,9 +20,11 @@ export default function App() {
   const [calInitialDate, setCalInitialDate] = useState(null);
   const [darkMode, setDarkMode] = useState(() => localStorage.getItem(DARK_MODE_KEY) === 'true');
 
-  const { diaries, create, update, remove } = useDiaries();
-  const { todos, addTodo, toggleTodo, removeTodo, updateTodo } = useTodos();
-  const { ddays, addDday, removeDday, updateDday } = useDdays();
+  const { diaries, loaded: diariesLoaded, create, update, remove } = useDiaries();
+  const { todos, loaded: todosLoaded, addTodo, toggleTodo, removeTodo, updateTodo } = useTodos();
+  const { ddays, loaded: ddaysLoaded, addDday, removeDday, updateDday } = useDdays();
+
+  const dataReady = diariesLoaded && todosLoaded && ddaysLoaded;
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', darkMode);
@@ -92,7 +94,7 @@ export default function App() {
     setFormDate(null);
   }
 
-  if (!splashDone) {
+  if (!splashDone || !dataReady) {
     return <Splash onDone={() => setSplashDone(true)} />;
   }
 

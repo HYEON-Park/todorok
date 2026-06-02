@@ -1,24 +1,24 @@
-import { useState, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { storageGet, storageSet } from '../utils/storage';
 
 const STORAGE_KEY = 'todorok-todos';
 
-function load() {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); }
-  catch { return {}; }
-}
-
-function save(data) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-}
-
 export function useTodos() {
-  const [todos, setTodos] = useState(load);
+  const [todos, setTodos] = useState({});
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    storageGet(STORAGE_KEY).then(raw => {
+      try { setTodos(raw ? JSON.parse(raw) : {}); } catch { setTodos({}); }
+      setLoaded(true);
+    });
+  }, []);
 
   const addTodo = useCallback((date, text) => {
     setTodos(prev => {
       const list = prev[date] || [];
       const next = { ...prev, [date]: [...list, { id: Date.now().toString(), text, done: false }] };
-      save(next);
+      storageSet(STORAGE_KEY, JSON.stringify(next));
       return next;
     });
   }, []);
@@ -27,7 +27,7 @@ export function useTodos() {
     setTodos(prev => {
       const list = (prev[date] || []).map(t => t.id === id ? { ...t, done: !t.done } : t);
       const next = { ...prev, [date]: list };
-      save(next);
+      storageSet(STORAGE_KEY, JSON.stringify(next));
       return next;
     });
   }, []);
@@ -36,7 +36,7 @@ export function useTodos() {
     setTodos(prev => {
       const list = (prev[date] || []).filter(t => t.id !== id);
       const next = { ...prev, [date]: list };
-      save(next);
+      storageSet(STORAGE_KEY, JSON.stringify(next));
       return next;
     });
   }, []);
@@ -45,10 +45,10 @@ export function useTodos() {
     setTodos(prev => {
       const list = (prev[date] || []).map(t => t.id === id ? { ...t, text } : t);
       const next = { ...prev, [date]: list };
-      save(next);
+      storageSet(STORAGE_KEY, JSON.stringify(next));
       return next;
     });
   }, []);
 
-  return { todos, addTodo, toggleTodo, removeTodo, updateTodo };
+  return { todos, loaded, addTodo, toggleTodo, removeTodo, updateTodo };
 }

@@ -325,28 +325,18 @@ body { height: 100%; overflow: hidden; }
   width: 100%;
   height: 100%;
   border: none;
+  outline: none;
   background: none;
   font-size: 24px;
+  text-align: center;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.15s;
+  padding: 0;
+  caret-color: transparent;
   color: var(--text-muted);
+  transition: background 0.15s;
 }
 .form-emoji-btn:hover { background: var(--bg); }
-
-.form-emoji-input {
-  width: 100%;
-  height: 100%;
-  border: none;
-  outline: none;
-  text-align: center;
-  font-size: 22px;
-  background: transparent;
-  cursor: text;
-  padding: 0;
-}
+.form-emoji-btn::placeholder { color: var(--text-muted); }
 
 .form-emoji-hint {
   position: absolute;

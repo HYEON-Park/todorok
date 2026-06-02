@@ -4,20 +4,7 @@ export default function DiaryForm({ date, initial, onSave, onCancel }) {
   const [title, setTitle] = useState(initial?.title || '');
   const [content, setContent] = useState(initial?.content || '');
   const [emoji, setEmoji] = useState(initial?.emoji || '');
-  const [emojiEditing, setEmojiEditing] = useState(false);
-  const [editCount, setEditCount] = useState(0);
   const emojiInputRef = useRef(null);
-
-  useEffect(() => {
-    if (emojiEditing && emojiInputRef.current) {
-      emojiInputRef.current.focus();
-    }
-  }, [emojiEditing]);
-
-  function startEmojiEditing() {
-    setEditCount(c => c + 1);
-    setEmojiEditing(true);
-  }
 
   useEffect(() => {
     setTitle(initial?.title || '');
@@ -39,18 +26,18 @@ export default function DiaryForm({ date, initial, onSave, onCancel }) {
     e.preventDefault();
     if (!title.trim()) { alert('제목을 입력해주세요.'); return; }
     if (!content.trim()) { alert('내용을 입력해주세요.'); return; }
-    onSave(title.trim(), content.trim(), emoji);
+    onSave(title.trim(), content.trim(), emoji || '🍀');
   }
 
   function handleEmojiChange(e) {
     const val = e.target.value;
-    if (!val) return;
+    if (!val) { setEmoji(''); return; }
     try {
-      const first = [...new Intl.Segmenter().segment(val)][0]?.segment;
-      if (first) { setEmoji(first); setEmojiEditing(false); }
+      const segments = [...new Intl.Segmenter().segment(val)];
+      const last = segments.at(-1)?.segment;
+      if (last) setEmoji(last);
     } catch {
-      setEmoji(val[0]);
-      setEmojiEditing(false);
+      setEmoji([...val].at(-1) || val[0]);
     }
   }
 
@@ -61,29 +48,15 @@ export default function DiaryForm({ date, initial, onSave, onCancel }) {
       <div className="form-title-row">
         <h2 className="form-title">{isEdit ? '일기 수정' : '일기 쓰기'}</h2>
         <div className="form-emoji-box">
-          {emojiEditing ? (
-            <>
-              <input
-                key={editCount}
-                ref={emojiInputRef}
-                className="form-emoji-input"
-                defaultValue=""
-                onChange={handleEmojiChange}
-                onBlur={() => setEmojiEditing(false)}
-                onKeyDown={e => { if (e.key === 'Escape') setEmojiEditing(false); }}
-              />
-              <span className="form-emoji-hint">Win+;</span>
-            </>
-          ) : (
-            <button
-              type="button"
-              className="form-emoji-btn"
-              onClick={startEmojiEditing}
-              title="emoji"
-            >
-              {emoji || '🍀'}
-            </button>
-          )}
+          <input
+            ref={emojiInputRef}
+            className="form-emoji-btn"
+            value={emoji}
+            placeholder="🍀"
+            onClick={() => setEmoji('')}
+            onChange={handleEmojiChange}
+          />
+          {!emoji && <span className="form-emoji-hint">Win+;</span>}
         </div>
       </div>
       <p className="form-date">{date}</p>
