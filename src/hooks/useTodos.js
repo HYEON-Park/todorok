@@ -8,10 +8,12 @@ export function useTodos() {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    storageGet(STORAGE_KEY).then(raw => {
-      try { setTodos(raw ? JSON.parse(raw) : {}); } catch { setTodos({}); }
-      setLoaded(true);
-    });
+    storageGet(STORAGE_KEY)
+      .then(raw => {
+        try { setTodos(raw ? JSON.parse(raw) : {}); } catch { setTodos({}); }
+      })
+      .catch(() => { setTodos({}); })
+      .finally(() => { setLoaded(true); });
   }, []);
 
   const addTodo = useCallback((date, text) => {

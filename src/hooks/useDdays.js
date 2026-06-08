@@ -8,10 +8,12 @@ export function useDdays() {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    storageGet(STORAGE_KEY).then(raw => {
-      try { setDdays(raw ? JSON.parse(raw) : []); } catch { setDdays([]); }
-      setLoaded(true);
-    });
+    storageGet(STORAGE_KEY)
+      .then(raw => {
+        try { setDdays(raw ? JSON.parse(raw) : []); } catch { setDdays([]); }
+      })
+      .catch(() => { setDdays([]); })
+      .finally(() => { setLoaded(true); });
   }, []);
 
   const addDday = useCallback((title, date) => {

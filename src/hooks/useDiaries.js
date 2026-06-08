@@ -8,10 +8,12 @@ export function useDiaries() {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    storageGet(STORAGE_KEY).then(raw => {
-      try { setDiaries(raw ? JSON.parse(raw) : {}); } catch { setDiaries({}); }
-      setLoaded(true);
-    });
+    storageGet(STORAGE_KEY)
+      .then(raw => {
+        try { setDiaries(raw ? JSON.parse(raw) : {}); } catch { setDiaries({}); }
+      })
+      .catch(() => { setDiaries({}); })
+      .finally(() => { setLoaded(true); });
   }, []);
 
   const create = useCallback((date, title, content, emoji) => {
