@@ -8,7 +8,7 @@ export default function Splash({ onDone }) {
 
   return (
     <div className="splash">
-      <img src="/icon_1.jpg" alt="" className="splash-img" />
+      <img src="./icon_1.jpg" alt="" className="splash-img" />
     </div>
   );
 }
