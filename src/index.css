@@ -1432,3 +1432,6 @@ body { height: 100%; overflow: hidden; }
   border-color: #8c8c8c;
   color: var(--text);
 }
+:root.dark .dday-input::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}

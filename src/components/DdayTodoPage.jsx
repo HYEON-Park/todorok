@@ -123,6 +123,7 @@ export default function DdayTodoPage({ ddays, addDday, removeDday, updateDday, t
                 type="date"
                 value={date}
                 onChange={e => setDate(e.target.value)}
+                onClick={e => e.target.showPicker?.()}
                 className="dday-input"
               />
               <div className="dday-form-actions">
@@ -152,6 +153,7 @@ export default function DdayTodoPage({ ddays, addDday, removeDday, updateDday, t
                         type="date"
                         value={editDate}
                         onChange={e => setEditDate(e.target.value)}
+                        onClick={e => e.target.showPicker?.()}
                         className="dday-input"
                       />
                       <div className="dday-form-actions">
