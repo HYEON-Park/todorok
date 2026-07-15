@@ -1,4 +1,4 @@
-package com.pocketdiary.app;
+package com.todorok.app;
 
 import com.getcapacitor.BridgeActivity;
 

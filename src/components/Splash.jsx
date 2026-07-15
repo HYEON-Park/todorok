@@ -8,7 +8,9 @@ export default function Splash({ onDone }) {
 
   return (
     <div className="splash">
-      <img src="./icon_1.jpg" alt="" className="splash-img" />
+      <div className="splash-inner">
+        <img src="./splash-icon.png" alt="투두록" className="splash-img" />
+      </div>
     </div>
   );
 }

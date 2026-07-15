@@ -2,6 +2,6 @@
 <resources>
     <string name="app_name">todorok</string>
     <string name="title_activity_main">todorok</string>
-    <string name="package_name">com.pocketdiary.app</string>
-    <string name="custom_url_scheme">com.pocketdiary.app</string>
+    <string name="package_name">com.todorok.app</string>
+    <string name="custom_url_scheme">com.todorok.app</string>
 </resources>
