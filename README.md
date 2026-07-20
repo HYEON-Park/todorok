@@ -23,13 +23,17 @@ npm install
 # 웹 개발 서버 (http://localhost:5173)
 npm run dev
 
-# Android APK 빌드
+# Android 빌드 (웹 자산 빌드 후 네이티브 프로젝트에 동기화)
 npm run build
 npx cap sync android
 npx cap open android   # Android Studio에서 빌드
 ```
 
-**요구사항**: Node.js 18+, Android Studio (APK 빌드 시)
+**요구사항**: Node.js 18+, Android Studio · JDK 17 (Android 빌드 시)
+
+> AGP가 JDK 17을 요구하는데 시스템 기본이 그보다 낮으면 빌드가 실패한다.
+> JDK 경로는 머신마다 다르므로 저장소에 커밋하지 않고, 각자 `~/.gradle/gradle.properties`에
+> `org.gradle.java.home=<JDK 17 경로>`를 넣거나 `JAVA_HOME`을 17로 설정한다.
 
 ---
 
